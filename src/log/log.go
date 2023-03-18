@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,8 +13,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
 )
-
-const API = "gw"
 
 var l *logger = NewLogger()
 
@@ -25,44 +24,36 @@ type logger struct {
 func NewLogger() *logger {
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 	var zlog zerolog.Logger
-	if os.Getenv("APP_ENV") == "dev" {
-		zlog = zerolog.New(
-			zerolog.ConsoleWriter{
-				Out:        os.Stderr,
-				TimeFormat: time.RFC3339,
-				FormatLevel: func(i interface{}) string {
-					return strings.ToUpper(fmt.Sprintf("[%s]", i))
-				},
-				FormatMessage: func(i interface{}) string {
-					return fmt.Sprintf("| %s |", i)
-				},
-			}).
-			Level(zerolog.TraceLevel).
-			With().
-			Str("api", API).
-			Timestamp().
-			Logger()
+	zlog = zerolog.New(
+		zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: time.RFC3339,
+			FormatLevel: func(i interface{}) string {
+				return strings.ToUpper(fmt.Sprintf("[%s]", i))
+			},
+			FormatMessage: func(i interface{}) string {
+				return fmt.Sprintf("| %s |", i)
+			},
+		}).
+		Level(zerolog.TraceLevel).
+		With().
+		Timestamp().
+		Logger()
 
-	} else { // prod
-		zlog = zerolog.New(os.Stdout).
-			Level(zerolog.InfoLevel).
-			With().
-			Timestamp().
-			Logger()
-	}
 	return &logger{
 		logger: zlog,
 	}
 }
 
-func Error(err error, pkg string, method string, msg string) {
+func Error(err error, pkg string, funct string, msg string) {
 	var restErr rest_errors.RestErr
 	if errors.As(err, &restErr) {
 		l.logger.
 			Error().
 			Stack().
-			Err(fmt.Errorf((fmt.Sprintf("%d - %s", restErr.Status(), restErr.Causes())))).
-			Str("method", method).
+			Err(restErr).
+			Str("code", strconv.Itoa(restErr.Status())).
+			Str("function", funct).
 			Str("pkg", pkg).
 			Msg(msg)
 	} else {
@@ -70,7 +61,7 @@ func Error(err error, pkg string, method string, msg string) {
 			Error().
 			Stack().
 			Err(err).
-			Str("method", method).
+			Str("function", funct).
 			Str("pkg", pkg).
 			Msg(msg)
 	}

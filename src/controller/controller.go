@@ -28,7 +28,7 @@ type controller struct {
 func (ctrl *controller) DoSomething(c *gin.Context) {
 	boolRes, restErr := ctrl.service.DoSomething()
 	if restErr != nil {
-		log.Error(restErr, "ctrl", "DoSomething", restErr.Causes())
+		log.Error(restErr, "ctrl", "DoSomething", restErr.Error())
 		c.JSON(restErr.Status(), restErr)
 		return
 	}
@@ -39,7 +39,7 @@ func (ctrl *controller) DoSomethingWithIntegerParam(c *gin.Context) {
 	i, err := strconv.ParseInt(c.Param("integer"), 10, 32)
 	if err != nil {
 		restErr := rest_errors.NewBadRequestError(err.Error())
-		log.Error(err, "ctrl", "DoSomethingWithIntegerParam", restErr.Causes())
+		log.Error(err, "ctrl", "DoSomethingWithIntegerParam", restErr.Error())
 		c.JSON(restErr.Status(), restErr)
 		return
 	}
