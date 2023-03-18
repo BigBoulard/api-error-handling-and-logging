@@ -55,35 +55,6 @@ func NewLogger() *logger {
 	}
 }
 
-func Info(pkg string, method string, msg string) {
-	l.logger.
-		Info().
-		Str("method", method).
-		Str("pkg", pkg).
-		Msg(msg)
-}
-
-func Warn(err error, pkg string, method string, msg string) {
-	var restErr rest_errors.RestErr
-
-	if errors.As(err, &restErr) {
-		l.logger.
-			Warn().
-			Stack().
-			Err(fmt.Errorf((fmt.Sprintf("%d - %s - %s", restErr.Status(), restErr.Causes(), restErr.Message())))).
-			Str("method", method).
-			Str("pkg", pkg).
-			Msg(msg)
-	} else {
-		l.logger.
-			Warn().
-			Err(err).
-			Str("method", method).
-			Str("pkg", pkg).
-			Msg(msg)
-	}
-}
-
 func Error(err error, pkg string, method string, msg string) {
 	var restErr rest_errors.RestErr
 	if errors.As(err, &restErr) {
@@ -97,28 +68,6 @@ func Error(err error, pkg string, method string, msg string) {
 	} else {
 		l.logger.
 			Error().
-			Stack().
-			Err(err).
-			Str("method", method).
-			Str("pkg", pkg).
-			Msg(msg)
-	}
-}
-
-func Fatal(err error, pkg string, method string, msg string) {
-	var restErr rest_errors.RestErr
-
-	if errors.As(err, &restErr) {
-		l.logger.
-			Fatal().
-			Stack().
-			Err(fmt.Errorf((fmt.Sprintf("%d - %s - %s", restErr.Status(), restErr.Causes(), restErr.Message())))).
-			Str("method", method).
-			Str("pkg", pkg).
-			Msg(msg)
-	} else {
-		l.logger.
-			Fatal().
 			Stack().
 			Err(err).
 			Str("method", method).

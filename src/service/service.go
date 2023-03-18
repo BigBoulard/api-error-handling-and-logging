@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/BigBoulard/api-error-handling-and-logging/src/httpclient"
+	"github.com/BigBoulard/api-error-handling-and-logging/src/dbclient"
 	"github.com/BigBoulard/api-error-handling-and-logging/src/rest_errors"
 )
 
@@ -10,17 +10,17 @@ type Service interface {
 }
 
 type service struct {
-	httpClient httpclient.HttpClient
+	dbClient dbclient.DBClient
 }
 
-func NewService(httpClient httpclient.HttpClient) Service {
+func NewService(dbClient dbclient.DBClient) Service {
 	return &service{
-		httpClient: httpClient,
+		dbClient: dbClient,
 	}
 }
 
 func (s *service) DoSomething() (bool, rest_errors.RestErr) {
-	boolRes, restErr := s.httpClient.DoSomething()
+	boolRes, restErr := s.dbClient.DoSomething()
 	if restErr != nil {
 		return false, restErr
 	}
