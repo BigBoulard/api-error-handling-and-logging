@@ -1,8 +1,10 @@
 package application
 
 import (
-	"log"
+	"fmt"
 
+	"github.com/BigBoulard/api-error-handling-and-logging/src/conf"
+	"github.com/BigBoulard/api-error-handling-and-logging/src/log"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,17 +13,23 @@ var (
 )
 
 func StartApplication() {
+	// load the env variables
+	conf.LoadEnv()
+
 	gin.SetMode("debug")
 
 	router = gin.Default()
-	err := router.SetTrustedProxies(nil) // Context.ClientIP() returns the client IP directly
+	err := router.SetTrustedProxies(nil)
+
+	router.Use(log.Middleware())
+
 	if err != nil {
-		log.Fatal(err, "gw", "app", "router.SetTrustedProxies(nil)")
+		log.Fatal("application/main", err)
 	}
 
 	mapUrls()
-	err = router.Run("localhost:9090")
+	err = router.Run(fmt.Sprintf("%s:%s", conf.Env.Host, conf.Env.Port))
 	if err != nil {
-		log.Fatal("Unable to start Gin server")
+		log.Fatal("application/main", err)
 	}
 }

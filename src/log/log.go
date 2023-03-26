@@ -1,7 +1,6 @@
 package log
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -45,28 +44,26 @@ func NewLogger() *logger {
 	}
 }
 
-func Error(err error, pkg string, funct string, msg string) {
-	var restErr rest_errors.RestErr
-	if errors.As(err, &restErr) {
-		l.logger.
-			Error().
-			Stack().
-			Err(restErr).
-			Str("code", strconv.Itoa(restErr.Status())).
-			Str("function", funct).
-			Str("pkg", pkg).
-			Msg(msg)
-	} else {
-		l.logger.
-			Error().
-			Stack().
-			Err(err).
-			Str("function", funct).
-			Str("pkg", pkg).
-			Msg(msg)
-	}
+func Error(restErr rest_errors.RestErr) {
+	l.logger.
+		Error().
+		Stack().
+		Str("status", strconv.Itoa(restErr.Status())).
+		Str("code", restErr.Code()).
+		Str("message", restErr.Message()).
+		Str("path", restErr.Path()).
+		Msg(restErr.Message())
 }
 
+func Fatal(path string, err error) {
+	l.logger.
+		Fatal().
+		Stack().
+		Str("path", path).
+		Msg(err.Error())
+}
+
+// used by gin to log the incoming requests
 func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		t := time.Now()
