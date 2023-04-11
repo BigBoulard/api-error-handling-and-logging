@@ -1,8 +1,8 @@
-package service
+package productsservice
 
 import (
-	"github.com/BigBoulard/api-error-handling-and-logging/src/repository"
-	"github.com/BigBoulard/api-error-handling-and-logging/src/rest_errors"
+	"github.com/BigBoulard/api-error-handling-and-logging/microservice1/src/repositories/productsrepo"
+	"github.com/BigBoulard/api-error-handling-and-logging/microservice1/src/rest_errors"
 )
 
 type Service interface {
@@ -10,10 +10,10 @@ type Service interface {
 }
 
 type service struct {
-	productRepo repository.ProductRepo
+	productRepo productsrepo.Repo
 }
 
-func NewService(productRepo repository.ProductRepo) Service {
+func NewService(productRepo productsrepo.Repo) Service {
 	return &service{
 		productRepo: productRepo,
 	}

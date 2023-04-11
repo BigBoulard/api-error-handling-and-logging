@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/BigBoulard/api-error-handling-and-logging/src/rest_errors"
+	"github.com/BigBoulard/api-error-handling-and-logging/microservice2/src/rest_errors"
 	"github.com/jackc/pgerrcode"
 )
 

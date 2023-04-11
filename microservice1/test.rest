@@ -1,0 +1,5 @@
+### microservice 1 > return an error from the fake products repository
+GET http://localhost:9090/products/001 HTTP/1.1
+
+### microservice1 > microservice2 > dummy api
+GET http://localhost:9090/todos HTTP/1.1
